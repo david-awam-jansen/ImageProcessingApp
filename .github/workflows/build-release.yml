@@ -1,6 +1,12 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      target_platform:
+        description: 'Platform to build (linux, windows)'
+        required: true
+        default: 'linux'
   push:
     branches: [ "main" ]
     paths:

@@ -1,0 +1,41 @@
+{
+  "name": "ImageProcessingApptest",
+  "version": "1.0.0",
+  "description": "Use barcodes in an image to rename a file",
+  "main": "main.js",
+  "license": "MIT", 
+  "scripts": {
+    "start": "electron . --no-sandbox",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "34.0.2",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+  "appId": "com.example.imageprocessingapp",
+  "productName": "ImageProcessingApp",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "**/*"
+  ],
+  "win": {
+    "target": [
+      "nsis"
+    ]
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ]
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ]
+  }
+}
+}
+

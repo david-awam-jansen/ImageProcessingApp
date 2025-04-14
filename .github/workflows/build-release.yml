@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'code/rename_barcode.sh' # Only trigger if changes are made to this file
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:S
+        node-version: [18.x, 20.x] # Test with different Node.js versions
+        platform: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build for ${{ matrix.platform }}
+        run: |
+          if [[ "${{ matrix.platform }}" == "ubuntu-latest" ]]; then
+            npm run build -- --linux appimage
+          elif [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            npm run build -- --win nsis
+          fi
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.platform }}-build
+          path: dist/*

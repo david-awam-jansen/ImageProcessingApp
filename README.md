@@ -1,2 +1,2 @@
 # ImageProcessingApp
-Application to rename scanned images that contain a barcode/
+Application to rename scanned images that contain a barcode.

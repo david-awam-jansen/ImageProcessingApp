@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  ## adds a manual trigger to the workflow
     inputs:
       target_platform:
-        description: 'Platform to build (linux, windows)'
+        description: 'Platform to build (windows, linux)'
         required: true
         default: 'linux'
   push:

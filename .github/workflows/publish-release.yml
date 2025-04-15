@@ -24,7 +24,7 @@ jobs:
     - name: List files root
       run: ls -lR .
 
-          - name: Download Artifact
+    - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
         name: windows-build

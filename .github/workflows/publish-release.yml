@@ -1,6 +1,11 @@
 name: Publish Release (Manual)
 
 on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release Tag (e.g., v1.0.0)'
+        required: true
   workflow_run:
     workflows: [ "Build and Release" ] # Name of your build workflow
     types: [completed]

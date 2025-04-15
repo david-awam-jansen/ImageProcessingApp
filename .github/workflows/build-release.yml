@@ -34,7 +34,7 @@ jobs:
         run: npm install
 
       - name: Build for Windows
-        run: npm run build -- --win nsis
+        run: npm run build -- --win nsis  --publish never
   
 
      # - name: Build for ${{ matrix.platform }}

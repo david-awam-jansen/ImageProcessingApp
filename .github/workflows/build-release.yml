@@ -6,7 +6,7 @@ on:
       target_platform:
         description: 'Platform to build (windows, linux)'
         required: true
-        default: 'linux'
+        default: 'windows'
   push:
     branches: [ "main" ]
     paths:

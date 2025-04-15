@@ -18,20 +18,17 @@ jobs:
     - name: Create Directory
       run: mkdir -p release-assets # Create the directory if it doesn't exist
 
-    - name: Download Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-build
-        path: release-assets
-
     - name: List files
       run: ls -l release-assets    
 
-    - name: List files release-assets
-      run: ls -l release-assets    
-
     - name: List files root
-      run: ls -l .
+      run: ls -lR .
+
+          - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-build
+        #path: release-assets
 
     - name: Create Release
       uses: actions/create-release@v1

@@ -14,32 +14,39 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: List files release-assets
-        run: ls -l release-assets    
 
-      - name: List files root
-        run: ls -l .
-  
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-build
-          path: release-assets
+    - name: Create Directory
+      run: mkdir -p release-assets # Create the directory if it doesn't exist
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-build
+        path: release-assets
+
+    - name: List files
+      run: ls -l release-assets    
+
+    - name: List files release-assets
+      run: ls -l release-assets    
+
+    - name: List files root
+      run: ls -l .
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
+      with:
           tag_name: ${{ github.event.inputs.release_tag }}
           release_name: Release ${{ github.event.inputs.release_tag }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.release_tag, '-') }}
 
-      - name: Upload Release Asset (Windows)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release Asset (Windows)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: release-assets/ImageProcessingApp Setup 1.0.0.exe # Adjust filename as needed

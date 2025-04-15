@@ -1,0 +1,36 @@
+name: Publish Release (Manual)
+
+on:
+  workflow_run:
+    workflows: [ "Build and Release" ] # Name of your build workflow
+    types: [completed]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: release-assets
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.release_tag }}
+          release_name: Release ${{ github.event.inputs.release_tag }}
+          draft: false
+          prerelease: ${{ contains(github.event.inputs.release_tag, '-') }}
+
+      - name: Upload Release Asset (Windows)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release-assets/ImageProcessingApp Setup 1.0.0.exe # Adjust filename as needed
+          asset_name: ${{ github.event.inputs.release_tag }}-windows.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

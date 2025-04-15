@@ -14,18 +14,18 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-build
-          path: release-assets
-
       - name: List files release-assets
         run: ls -l release-assets    
 
       - name: List files root
         run: ls -l .
   
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: release-assets
+
       - name: Create Release
         uses: actions/create-release@v1
         env:

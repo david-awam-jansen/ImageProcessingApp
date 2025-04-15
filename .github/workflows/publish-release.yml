@@ -16,9 +16,9 @@ jobs:
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
-        with:
-          name: windows-build
-          path: release-assets
+        #with:
+          #name: windows-build
+          #path: release-assets
 
       - name: Create Release
         uses: actions/create-release@v1

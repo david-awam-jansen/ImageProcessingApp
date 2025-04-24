@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "zbar": "^0.0.4",
-    "magick" "^0.0.1"
+    "magick": "^0.0.1"
   },
   "devDependencies": {
     "electron": "34.0.2",

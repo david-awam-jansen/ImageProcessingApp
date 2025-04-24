@@ -10,6 +10,8 @@ on:
     branches:
       - main
 
+      ## extra push
+
 jobs:
   build_and_publish: # Single job
     runs-on: windows-latest # 1. Change the runner to Windows
@@ -49,7 +51,7 @@ jobs:
           prerelease: ${{ contains(github.event.inputs.release_tag, '-') }}
 
       - name: Upload Release Asset (Windows)
-        uses: actions/upload-release-asset@v1S
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

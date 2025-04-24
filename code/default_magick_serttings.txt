@@ -1,0 +1,4 @@
+-colorspace Gray \
+-contrast-stretch 5%x5% \
+-level 20%,80% \
+ -threshold 50% \

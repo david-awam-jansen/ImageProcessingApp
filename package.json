@@ -1,5 +1,5 @@
 {
-  "name": "ImageProcessingApptest",
+  "name": "ImageProcessingApp",
   "version": "1.0.0",
   "description": "Use barcodes in an image to rename a file",
   "main": "main.js",
@@ -7,6 +7,12 @@
   "scripts": {
     "start": "electron . --no-sandbox",
     "build": "electron-builder"
+  },
+  "bin": {
+    "imageprocessingapp": "main.js"
+  },
+  "dependencies": {
+    "zbar": "^0.2.0"
   },
   "devDependencies": {
     "electron": "34.0.2",

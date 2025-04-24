@@ -12,24 +12,30 @@ on:
 
 jobs:
   build_and_publish: # Single job
-    runs-on: ubuntu-latest
+    runs-on: windows-latest # 1. Change the runner to Windows
+    #runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
+     # - name: Set up .NET
+     #   uses: actions/setup-dotnet@v3
+     #   with:
+     #     dotnet-version: '8.0.200' # Or your desired version
+
+       - name: Set up Node.js # 2. Set up Node.js environment
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: '8.0.200' # Or your desired version
+          node-version: '20.x' # Or your preferred Node.js version
 
-      - name: List workspace contents
-        run: ls -l
+      - name: Install dependencies # 3. Install Node.js dependencies
+        run: npm install
 
-      - name: Restore dependencies
-        run: dotnet restore ImageProcessingApp.sln
+      - name: Install pkg # 4. Install the pkg tool
+        run: npm install -g pkg
 
-      - name: Build application
-        run: dotnet publish ImageProcessingApp.sln -c Release -o dist
+      - name: Build Windows executable # 5. Build the Windows executable using pkg
+        run: pkg . --targets node20-win-x64 --output my-app.exe # Adjust target and output
 
       - name: Create Release
         id: create_release
@@ -43,11 +49,11 @@ jobs:
           prerelease: ${{ contains(github.event.inputs.release_tag, '-') }}
 
       - name: Upload Release Asset (Windows)
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1S
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/ImageProcessingApp Setup 1.0.0.exe # Adjust the path!
+          asset_path: dist/ImageProcessingApp Setup 1.0.0.exe # SAdjust the path!
           asset_name: ${{ github.event.inputs.release_tag }}-windows.exe
           asset_content_type: application/vnd.microsoft.portable-executable

@@ -25,16 +25,21 @@ jobs:
      #   with:
      #     dotnet-version: '8.0.200' # Or your desired version
 
+      # 2, setup Node.js environment
       - name: Set up Node.js # 2. Set up Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: '20.x' # Or your preferred Node.js version
 
-      - name: Install dependencies # 3. Install Node.js dependencies
-        run: npm install
+      - name: Install dependencies
+        run: |
+          npm install -g npm-check-updates
+          ncu -u
+          npm install
 
-      - name: Install pkg # 4. Install the pkg tool
-        run: npm install -g pkg
+      - name: Install pkg tool
+        run: |
+          npm install -g pkg  
 
       - name: Build Windows executable # 5. Build the Windows executable using pkg
         run: pkg . --targets node20-win-x64 --output my-app.exe # Adjust target and output

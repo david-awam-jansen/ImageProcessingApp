@@ -3,12 +3,11 @@
 ## the following lines fixes those
 #sed -i 's/\r$//' ./code/rename_barcode.sh
 
-echo "Does scips work?"
-
 ## set folder
 source_folder="$1"          # folder where the images are stored
 destination_folder="$2"     # folder where the processed images are stored
 pattern="$3"                # pattern to match the files in the folder
+magick_settings="$4"          # optional: override default ImageMagick settings
 
 #source_folder=$(wslpath "$source_folder")
 #destination_folder=$(wslpath "$destination_folder")
@@ -58,35 +57,50 @@ fi  #end of ZBar check
 # If not, create them
 for subfolder in "$destination_folder" \
     "$destination_folder/renamed" \
-    "$destination_folder/failed"; do
+    "$destination_folder/failed" \
+    "$destination_folder/failed_processed"; do 
     if [ ! -d "$subfolder" ]; then
         mkdir -p "$subfolder"
         echo "Created directory: $subfolder"
     fi  #end of subfolder check/creation
 done    #end of for loop for subfolders
 
+## finding all files that match the pattern
+# Get a list of all matching files for counting
+shopt -s nullglob
+all_files=("$source_folder"$pattern)
+shopt -u nullglob
+total_files="${#all_files[@]}"
+processed_count=0
+
+total_files="${#all_files[@]}"
+
 # Process the files in the source folder
-for file in "$source_folder"/$pattern; do
-    # Check if files with pattern exist
+for file in "$source_folder"$pattern; do
     
     if [ -f "$file" ]; then
         # Process the files in the source folder
         filename=$(basename "$file")
-        echo "Processing $filename"
-        #file=$(combine_path "$source_folder" "$filename")  
-
-         #Convert the image and save it to a temporary file
-        # Convert the image and save it to a temporary file
+            # keep track of the number of processed files
+            processed_count=$((processed_count + 1))
+            percentage=$(( (processed_count * 100) / total_files ))
+                   # Convert the image and save it to a temporary file
         temp_file="$destination_folder/temp.jpg"
 
-        "$MAGICK_PATH" $file \
-            -colorspace Gray \
-            -contrast-stretch 5%x5% \
-            -level 20%,80% \
-            -threshold 50% \
-            $temp_file
+    # Default ImageMagick settings
+    default_magick_settings="-colorspace Gray -contrast-stretch 5%x5% -level 20%,80% -threshold 50%"
 
-    
+    # Determine whether to use a settings file or inline settings
+    if [ -z "$settings_source" ]; then
+        magick_settings="$default_magick_settings"
+        elif [ -f "$settings_source" ]; then
+        magick_settings=$(<"$settings_source")  # Read contents of the file
+        else
+        magick_settings="$settings_source"      # Treat it as inline settings
+        fi
+
+        "$MAGICK_PATH" $file $magick_settings "$temp_file"
+
     # Read the barcode from the temporary file
     # using the ZBar command-line tool
     # --raw: output the barcode data only
@@ -98,12 +112,16 @@ for file in "$source_folder"/$pattern; do
         # Remove possible spaces from the barcode
         sanitized_name=$(echo "$name" | tr -d '[:space:]') 
         # rename the file to the barcode
-        echo "Renaming $file to $sanitized_name.jpg" 
+        echo -ne "Renaming $file to $sanitized_name.jpg ($processed_count/$total_files; $percentage%)...\r"
         # copy the renamed file to the renamed folder
         cp "$file" "$destination_folder/renamed/$sanitized_name.jpg" 
         else    # If no barcode was found, move the file to the failed folder
         echo "No barcode found in $file"
         cp "$file" "$destination_folder/failed/$(basename "$file")"
+         # For failed images, save the processed version for inspection
+         processed_failed_file="$destination_folder/failed_processed/$(basename "$file")"
+         "$MAGICK_PATH" "$file" $magick_settings "$processed_failed_file"
+         echo "Saved processed failed image to: $processed_failed_file"
     fi #end of barcode check
     
     # Remove the temporary file
@@ -114,3 +132,6 @@ for file in "$source_folder"/$pattern; do
         exit 1
     fi  #end of file check
 done
+
+echo "" # Add a newline after the loop finishes
+echo "Processing complete. $processed_count files processed."

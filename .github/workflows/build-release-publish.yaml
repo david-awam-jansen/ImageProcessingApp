@@ -22,6 +22,9 @@ jobs:
         with:
           dotnet-version: '8.0.200' # Or your desired version
 
+      - name: List workspace contents
+        run: ls -l
+
       - name: Restore dependencies
         run: dotnet restore ImageProcessingApp.sln
 
